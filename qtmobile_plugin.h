@@ -1,9 +1,9 @@
-#ifndef FIREBASEPLUGIN_PLUGIN_H
-#define FIREBASEPLUGIN_PLUGIN_H
+#ifndef QTMOBILEPLUGIN_PLUGIN_H
+#define QTMOBILEPLUGIN_PLUGIN_H
 
 #include <QQmlExtensionPlugin>
 
-class FirebasePluginPlugin : public QQmlExtensionPlugin
+class QtMobilePlugin : public QQmlExtensionPlugin
 {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID QQmlExtensionInterface_iid)
@@ -12,4 +12,4 @@ public:
     void registerTypes(const char *uri) override;
 };
 
-#endif // FIREBASEPLUGIN_PLUGIN_H
+#endif // QTMOBILEPLUGIN_PLUGIN_H

@@ -1,11 +1,10 @@
-#include "firebasemodel.h"
-#include "support.h"
+#include "firebasefirestoremodel.h"
 #include <android/log.h>
 
 
-FirebaseModel* FirebaseModel::m_instance;
+FirebaseFirestoreModel* FirebaseFirestoreModel::m_instance;
 
-FirebaseModel::FirebaseModel(QObject *parent)
+FirebaseFirestoreModel::FirebaseFirestoreModel(QObject *parent)
     : QObject(parent)
 {
     // By default, QQuickItem does not draw anything. If you subclass
@@ -13,11 +12,11 @@ FirebaseModel::FirebaseModel(QObject *parent)
     // following line and re-implement updatePaintNode()
 
     // setFlag(ItemHasContents, true);
-    FirebaseModel::m_instance = this;
+    FirebaseFirestoreModel::m_instance = this;
     this->registerNativeMethods();
 }
 
-FirebaseModel::~FirebaseModel()
+FirebaseFirestoreModel::~FirebaseFirestoreModel()
 {
 
 }
@@ -41,7 +40,7 @@ static void static_firestoreReadResult(JNIEnv *env, jobject thiz, jstring collec
 
 
 
-    emit FirebaseModel::instance()->firestoreResultsFor(env->GetStringUTFChars(collection, nullptr), list);
+    emit FirebaseFirestoreModel::instance()->firestoreResultsFor(env->GetStringUTFChars(collection, nullptr), list);
 }
 
 static void static_firestoreReadResult2(JNIEnv *env, jobject thiz, jstring collection, jobject values){
@@ -97,7 +96,7 @@ static void static_firestoreReadResult2(JNIEnv *env, jobject thiz, jstring colle
 
 
 
-    emit FirebaseModel::instance()->firestoreResultsFor2(env->GetStringUTFChars(collection, nullptr), list);
+    emit FirebaseFirestoreModel::instance()->firestoreResultsFor2(env->GetStringUTFChars(collection, nullptr), list);
 }
 
 static void static_firestoreError(JNIEnv *env, jobject thiz, jstring error){
@@ -105,10 +104,10 @@ static void static_firestoreError(JNIEnv *env, jobject thiz, jstring error){
     Q_UNUSED(thiz)
     qDebug() << "collection " << error;
     __android_log_write(ANDROID_LOG_INFO, "FirebasePlugin", "static_firestoreError");
-    emit FirebaseModel::instance()->firestoreError(env->GetStringUTFChars(error, nullptr));
+    emit FirebaseFirestoreModel::instance()->firestoreError(env->GetStringUTFChars(error, nullptr));
 }
 
-void FirebaseModel::firestoreRead(const QString &collection){
+void FirebaseFirestoreModel::firestoreRead(const QString &collection){
     __android_log_write(ANDROID_LOG_INFO, "FirebasePlugin", "firestoreRead");
     QAndroidJniObject javaCollection = QAndroidJniObject::fromString(collection);
     QAndroidJniObject javaClass("com/qt/plugin/firebase/QtFirebasePlugin");
@@ -117,7 +116,7 @@ void FirebaseModel::firestoreRead(const QString &collection){
 }
 
 
-void FirebaseModel::registerNativeMethods() {
+void FirebaseFirestoreModel::registerNativeMethods() {
 
     __android_log_write(ANDROID_LOG_INFO, "FirebasePlugin", "registerNativeMethods");
 

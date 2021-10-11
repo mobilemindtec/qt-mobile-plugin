@@ -1,5 +1,5 @@
-#ifndef SUPPORT_H
-#define SUPPORT_H
+#ifndef JNIMETHODBUILDER_H
+#define JNIMETHODBUILDER_H
 
 #include <QString>
 #include <QList>
@@ -18,14 +18,18 @@ public:
     ~JniMethodBuilder();
 
 
-    const QString javaClassObject = "Ljava/lang/Object;";
-    const QString javaClassString = "Ljava/lang/String;";
-    const QString javaClassList= "Ljava/util/List;";
-    const QString javaClassMap= "Ljava/util/Map;";
-    const QString javaClassSet = "Ljava/util/Set;";
-    const QString javaClassArrayList = "Ljava/util/ArrayList;";
+    static const QString JavaClassNameObject;
+    static const QString JavaClassNameString;
+    static const QString JavaClassNameList;
+    static const QString JavaClassNameMap;
+    static const QString JavaClassNameSet;
+    static const QString JavaClassNameArrayList;
+    static const QString JavaClassNameIterator;
+    static const QString JavaClassNameArrayObject;
+    static const QString JavaClassNameCollection;
+    static const QString JavaClassNameArrayString;
 
-
+    static JniMethodBuilder * builder();
 
     JniMethodBuilder* returnVoid() { return this->addReturn("V"); };
     JniMethodBuilder* returnBoolean() { return this->addReturn("Z"); };
@@ -108,10 +112,6 @@ public:
     QAndroidJniObject callMethodJavaUtil_MapEntry_GetValue(QAndroidJniObject const &obj);
 };
 
-class Support
-{
-public:
-    Support();
-};
 
-#endif // SUPPORT_H
+
+#endif // JNIMETHODBUILDER_H

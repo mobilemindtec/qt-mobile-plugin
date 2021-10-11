@@ -1,4 +1,19 @@
-#include "support.h"
+#include "jnimethodbuilder.h"
+
+const QString JniMethodBuilder::JavaClassNameObject = "Ljava/lang/Object;";
+const QString JniMethodBuilder::JavaClassNameString = "Ljava/lang/String;";
+const QString JniMethodBuilder::JavaClassNameList= "Ljava/util/List;";
+const QString JniMethodBuilder::JavaClassNameMap= "Ljava/util/Map;";
+const QString JniMethodBuilder::JavaClassNameSet = "Ljava/util/Set;";
+const QString JniMethodBuilder::JavaClassNameArrayList = "Ljava/util/ArrayList;";
+const QString JniMethodBuilder::JavaClassNameIterator = "Ljava/util/Iterator;";
+const QString JniMethodBuilder::JavaClassNameCollection= "Ljava/util/Collection;";
+const QString JniMethodBuilder::JavaClassNameArrayObject = "[Ljava/lang/Object;";
+const QString JniMethodBuilder::JavaClassNameArrayString = "[Ljava/lang/String;";
+
+JniMethodBuilder * builder(){
+     return new JniMethodBuilder();
+}
 
 JniMethodBuilder::JniMethodBuilder(){
 

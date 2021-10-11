@@ -1,9 +1,9 @@
 TEMPLATE = lib
-TARGET = FirebasePlugin
+TARGET = QtMobilePlugin
 QT += qml quick androidextras
 CONFIG += plugin c++11 qmltypes
 
-QML_IMPORT_NAME = FirebasePlugin
+QML_IMPORT_NAME = QtMobilePlugin
 QML_IMPORT_MAJOR_VERSION = 1.0
 
 DESTDIR = imports/$$QML_IMPORT_NAME
@@ -13,22 +13,41 @@ uri = com.qt.plugin
 
 # Input
 SOURCES += \
-        firebasemodel.cpp \
-        firebaseplugin_plugin.cpp \
-        javaobject.cpp \
-        support.cpp
+        firebase/firebasefirestoremodel.cpp \
+        jni/javalangobject.cpp \
+        jni/javautilcollection.cpp \
+        jni/javalangthrowable.cpp \
+        jni/javautiliterator.cpp \
+        jni/javautillist.cpp \
+        jni/javautilmapentry.cpp \
+        jni/javautilset.cpp \
+        jni/javautilmap.cpp \
+        jni/jniutil/jnimethodbuilder.cpp \
+        jni/qtchannelmessage.cpp \
+        jni/qtchannel.cpp \
+        qtmobile_plugin.cpp
 
 HEADERS += \
-        firebasemodel.h \
-        firebaseplugin_plugin.h \
-        javaobject.h \
-        support.h
+        firebase/firebasefirestoremodel.h \
+        jni/javalangobject.h \
+        jni/javautilcollection.h \
+        jni/javalangthrowable.h \
+        jni/javautiliterator.h \
+        jni/javautillist.h \
+        jni/javautilmapentry.h \
+        jni/javautilset.h \
+        jni/javautilmap.h \
+        jni/jniutil/jnimethodbuilder.h \
+        jni/qtchannelmessage.h \
+        jni/qtchannel.h \
+        qtmobile_plugin.h
 
 PLUGINFILES += \
     imports/$$QML_IMPORT_NAME/plugin.qml \
     imports/$$QML_IMPORT_NAME/qmldir
 
 DISTFILES += $$PLUGINFILES \
+    android/src/com/qt/plugin/core/QChannelImpl.java \
     android/src/com/qt/plugin/core/QtChannel.java \
     android/src/com/qt/plugin/core/QtChannelMessage.java
 
@@ -53,7 +72,7 @@ android {
 
     DISTFILES += \
         android/build.gradle \
-    android/src/com/qt/plugin/firebase/QtFirestore.java
+    android/src/com/qt/plugin/firebase/QtFirebaseFirestore.java
         #android/gradle/wrapper/gradle-wrapper.properties \
         #android/AndroidManifest.xml \
         #android/res/values/libs.xml \

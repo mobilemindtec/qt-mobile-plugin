@@ -7,21 +7,21 @@
 #include <QList>
 
 //![0]
-class FirebaseModel : public QObject
+class FirebaseFirestoreModel : public QObject
 {
     Q_OBJECT
     //Q_DISABLE_COPY(Firebase)
-     QML_NAMED_ELEMENT(Firebase)
+     QML_NAMED_ELEMENT(FirebaseFirestore)
 //![0]
 private:
     void registerNativeMethods();
-    static FirebaseModel *m_instance;
+    static FirebaseFirestoreModel *m_instance;
 
 public:
-    explicit FirebaseModel(QObject *parent = nullptr);
-    static FirebaseModel  *instance() { return FirebaseModel::m_instance; }
+    explicit FirebaseFirestoreModel(QObject *parent = nullptr);
+    static FirebaseFirestoreModel  *instance() { return FirebaseFirestoreModel::m_instance; }
 
-    ~FirebaseModel() override;
+    ~FirebaseFirestoreModel() override;
 
     Q_INVOKABLE void firestoreRead(QString const &collection);    
 

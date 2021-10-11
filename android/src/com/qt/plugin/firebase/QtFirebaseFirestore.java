@@ -49,14 +49,50 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class QtFirestore{
+import com.qt.plugin.core.QtChannel
+import com.qt.plugin.core.QtChannelMessage
 
-    private static String TAG = "QtFirestore";
+public class QtFirebaseFirestore{
+
+    private final String ChannelName = "firebase.Firestore"
+    private final String MethodInit = "init";
+    private final String MethodRead = "read";
+
+    private static String TAG = "QtFirebaseFirestore";
     private static FirebaseFirestore db;
+    private QtChannelMessage currentMessage;
+    private boolean initOk;
 
-    private static native void static_firestoreReadResult(String collection, String[] results);
-    private static native void static_firestoreReadResult2(String collection, List<Map<String, Object>> results);
-    private static native void static_firestoreError(String error);
+    //private static native void static_firestoreReadResult(String collection, String[] results);
+    //private static native void static_firestoreReadResult2(String collection, List<Map<String, Object>> results);
+    //private static native void static_firestoreError(String error);
+
+    public void getChannelName() {
+        return ChannelName;
+    }
+
+    public void register(){
+        channelRegister(ChannelName, this);
+    }
+
+    public void callMethod(QtChannelMessage message){
+
+        this.currentMessage = message;
+
+        switch(message.getMethodName()){
+            case MethodInit:
+                init();
+            break;
+            case MethodRead:
+
+                String collectionName = message.firstArg();
+
+                this.read(collectionName);
+            break;
+            default:
+                sendError("method not available", this.currentMessage);
+        }
+    }
 
     public void init() {
         if(this.db == null){
@@ -64,18 +100,24 @@ public class QtFirestore{
                 Log.i(TAG, "Firebase init..");
                 this.db = FirebaseFirestore.getInstance();
                 Log.i(TAG, "Firebase OK!");
-            }catch(Exception e){
-                static_firestoreError("Firebase init error: " + e.getMessage());
+                this.initOk = true;
+            }catch(Exception e){                
                 Log.w(TAG, "Firebase init error:", e);
+                sendError(e, "error on init firestore: " + e.getMessage(), this.currentMessage);
             }
         }
 
     }
 
-    public void firestoreRead(String collection){
+    public void read(String collection){
 
-        this.init();
-        Log.i(TAG, "firestireRead java called from c++");
+        Log.i(TAG, "read");
+
+        if(!this.initOk){
+            sendError("firebase not initialized", this.currentMessage);
+            return
+        }
+
 
         db.collection(collection)
             .get()
@@ -85,23 +127,18 @@ public class QtFirestore{
                     Log.i(TAG, "onComplete");
                     if (task.isSuccessful()) {
 
-                        List<String> results = new LinkedList<String>();
-                        List<Map<String,Object>> results2 = new LinkedList<Map<String, Object>>();
+                        List<Map<String,Object>> results = new LinkedList<Map<String, Object>>();
 
                         for (QueryDocumentSnapshot document : task.getResult()) {
-                            Log.d(TAG, document.getId() + " => " + document.getData());
-                            results.add(document.getData().toString());
-                            results2.add(document.getData());
+                            results.add(document.getData());
                         }
 
                         Log.i(TAG, "call c++ from java");
-                        static_firestoreReadResult(collection, results.toArray(new String[results.size()]));
+                        sendData(currentMessage, results);
 
-                        static_firestoreReadResult2(collection, results2);
-
-                    } else {
-                        static_firestoreError("Error getting documents:" + task.getException());
+                    } else {                        
                         Log.w(TAG, "Error getting documents.", task.getException());
+                        sendError(task.getException(), "firebase task error: " + task.getException().getMessage(), this.currentMessage);
                     }
                 }
             });
