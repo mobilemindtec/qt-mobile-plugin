@@ -3,17 +3,20 @@
 
 #include "javalangobject.h"
 #include "javautiliterator.h"
+#include "jniutil/jnimethodbuilder.h"
 
 class JavaUtilCollection: public JavaLangObject{
 public:
     JavaUtilCollection() : JavaLangObject() {}
     JavaUtilCollection(QAndroidJniObject obj) : JavaLangObject(obj){}
+    JavaUtilCollection(const JavaUtilCollection &obj) : JavaLangObject(obj) {}
+    JavaUtilCollection(const JavaLangObject &obj) : JavaLangObject(obj) {}
     int size();
-    bool remove(JavaLangObject obj);
-    bool contains(JavaLangObject obj);
+    bool remove(JavaLangObject &);
+    bool contains(JavaLangObject &);
     bool isEmpty();
     void clear();
-    void add(JavaLangObject obj);
+    void add(JavaLangObject &);
     JavaUtilIterator iterator();
     QList<JavaLangObject> toArray();
 };

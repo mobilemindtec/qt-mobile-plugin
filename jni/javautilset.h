@@ -9,6 +9,8 @@ class JavaUtilSet : public JavaUtilCollection{
 public:
     JavaUtilSet() : JavaUtilCollection() {}
     JavaUtilSet(QAndroidJniObject obj) : JavaUtilCollection(obj){}
+    JavaUtilSet(const JavaUtilSet &obj) : JavaUtilCollection(obj){}
+    JavaUtilSet(const JavaLangObject &obj) : JavaUtilCollection(obj){}
 };
 
 

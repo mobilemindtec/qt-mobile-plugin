@@ -7,23 +7,29 @@
 #include <QtCore>
 #include "qtchannelmessage.h"
 #include "javalangobject.h"
+#include "jni/jniutil/jnimethodbuilder.h"
 
 class QtChannel : public JavaLangObject
 {
+    Q_OBJECT
 private:
-    static QtChannel * _instance;
-    void registerNativeMethods() const;
+    static QtChannel* instance_;
+    static QtChannel* newJavaObject();
+    void registerNativeMethods();
 public:
-    QtChannel();
+    QtChannel(){};
     QtChannel(QAndroidJniObject obj);
+    QtChannel(const QtChannel & obj) : JavaLangObject(obj) {}
+    QtChannel(const JavaLangObject & obj) : JavaLangObject(obj) {}
 
-    static QtChannel * instance() { return QtChannel::_instance; }
-    static const QString JavaClassName;
+    static QtChannel* instance();
+    static const QString kJavaClassName;
+    const QString kTag = "QtChannel";
 
-    void callMethod(QtChannelMessage &message) const;
-    void callMethod(QString const &channelName, QString const &methodName, QtChannelMessage &message) const;
+    void callMethod(QtChannelMessage &message);
+    void callMethod(QString const &channelName, QString const &methodName, QtChannelMessage &message);
 
-    static QtChannel newJavaObject();
+
 
 signals:
     void messageReceived(QtChannelMessage &message);

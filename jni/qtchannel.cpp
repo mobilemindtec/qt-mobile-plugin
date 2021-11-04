@@ -1,57 +1,59 @@
 #include "qtchannel.h"
 
-QtChannel * QtChannel::_instance;
+QtChannel * QtChannel::instance_;
 
-const QString QtChannel::JavaClassName = "[com/qt/plugin/core/QtChannelImpl;";
-
-QtChannel::QtChannel() : QtChannel(NULL){
-}
+const QString QtChannel::kJavaClassName = "com/qt/plugin/core/QtChannelCaller";
 
 QtChannel::QtChannel(QAndroidJniObject obj) : JavaLangObject(obj){
-    QtChannel::_instance = this;
+
+    if(QtChannel::instance_ == NULL)
+        QtChannel::instance_ = this;
+    this->registerNativeMethods();
 }
 
-void QtChannel::callMethod(QtChannelMessage &message) const
+QtChannel * QtChannel::instance(){
+    if(QtChannel::instance_ == NULL){
+        QtChannel::instance_ = QtChannel::newJavaObject();
+    }
+    return QtChannel::instance_;
+}
+
+void QtChannel::callMethod(QtChannelMessage &message)
 {
-    char * signature =  JniMethodBuilder::builder()
-            ->argType(QtChannelMessage::JavaClassName)
+    const char* signature =  JniMethodBuilder::builder()
+            ->argTypedObject(QtChannelMessage::kJavaClassName)
             ->build();
-    this->jniObj->callMethod<jobject>(
+    this->getJniObject().callMethod<void>(
                 "callMethod",
                 signature,
-                message.object()->object());
+                message.getJavaObject());
 }
 
-void QtChannel::callMethod(const QString &channelName, const QString &methodName, QtChannelMessage &message) const{
-    char * signature =  JniMethodBuilder::builder()
-            ->argString()
-            ->argString()
-            ->argType(QtChannelMessage::JavaClassName)
+void QtChannel::callMethod(const QString &channelName, const QString &methodName, QtChannelMessage &message){
+    const char* signature =  JniMethodBuilder::builder()
+            ->arg<jstring>()
+            ->arg<jstring>()
+            ->argTypedObject(QtChannelMessage::kJavaClassName)
             ->build();
 
     QAndroidJniObject javaChannelName = QAndroidJniObject::fromString(channelName);
     QAndroidJniObject javaMethodName = QAndroidJniObject::fromString(methodName);
 
-    this->jniObj->callMethod<jobject>(
+    this->getJniObject().callMethod<void>(
                 "callMethod",
                 signature,
                 javaChannelName.object<jstring>(),
                 javaMethodName.object<jstring>(),
-                message.object()->object());
+                message.getJavaObject());
 }
 
-QtChannel newJavaObject(){
-    QAndroidJniObject javaObj("com/qt/plugin/core/QtChannelImpl");
+QtChannel * QtChannel::newJavaObject(){
+    qDebug() << "QtChannel::newJavaObject";
+    QAndroidJniObject javaObj(JavaLangObject::toChar(QtChannel::kJavaClassName));
     QAndroidJniEnvironment env;
-    QtChannel channel = QtChannel(javaObj);
+    QtChannel * channel = new QtChannel(javaObj);
     return channel;
 }
-
-template <>
-QtChannel JavaLangObject::fromLocalRef<QtChannel>(jobject obj){
-    return QtChannel(QAndroidJniObject::fromLocalRef(obj));
-}
-
 
 static void callback(JNIEnv *env, jobject thiz, jobject jmessage){
     Q_UNUSED(env)
@@ -61,6 +63,7 @@ static void callback(JNIEnv *env, jobject thiz, jobject jmessage){
     QAndroidJniObject javaMessage = QAndroidJniObject::fromLocalRef(jmessage);
     QtChannelMessage message = QtChannelMessage(javaMessage);
     qDebug() << "QtChannel Message.dump: " << message.dump();
+
     emit QtChannel::instance()->messageReceived(message);
 }
 
@@ -73,16 +76,16 @@ static void callback(JNIEnv *env, jobject thiz, jobject jmessage){
 //}
 
 
-void QtChannel::registerNativeMethods() const{
+void QtChannel::registerNativeMethods(){
 
-    __android_log_write(ANDROID_LOG_INFO, "FirebasePlugin", "registerNativeMethods");
+    qDebug() << kTag << "registerNativeMethods";
 
     //QAndroidJniObject javaClass("com/qt/plugin/firebase/QtFirebasePlugin");
     QAndroidJniEnvironment env;
-    jclass objectClass = env->GetObjectClass(this->jniObj->object());
+    jclass objectClass = env->GetObjectClass(this->getJavaObject());
 
-    char * signature = JniMethodBuilder::builder()
-               ->argType(QtChannelMessage::JavaClassName)
+    const char* signature = JniMethodBuilder::builder()
+               ->argTypedObject(QtChannelMessage::kJavaClassName)
                ->build();
 
     JNINativeMethod methods[] = {
@@ -92,7 +95,11 @@ void QtChannel::registerNativeMethods() const{
     env->RegisterNatives(objectClass,
                          methods,
                          sizeof(methods) /  sizeof(methods[0]));
+
     env->DeleteLocalRef(objectClass);
 
-    __android_log_write(ANDROID_LOG_INFO, "FirebasePlugin", "registerNativeMethods end");
+
+    qRegisterMetaType<QtChannelMessage>("QtChannelMessage&");
+
+    qDebug() << kTag << "registerNativeMethods ok";
 }

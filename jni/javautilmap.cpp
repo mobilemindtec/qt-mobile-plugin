@@ -2,102 +2,78 @@
 
 
 void JavaUtilMap::clear(){
-    return this->jniObj->callMethod<void>("clear");
+    return this->getJniObject().callMethod<void>("clear");
 }
 
 bool JavaUtilMap::isEmpty(){
-    return this->jniObj->callMethod<jboolean>("isEmpty");
+    return this->getJniObject().callMethod<jboolean>("isEmpty");
 }
 
 int JavaUtilMap::size(){
-    return this->jniObj->callMethod<jint>("size");
+    return this->getJniObject().callMethod<jint>("size");
 }
 
 JavaUtilSet JavaUtilMap::keySet(){
-    char * signature =  JniMethodBuilder::builder()
-            ->returnType(JniMethodBuilder::JavaClassNameSet)
+    const char* signature =  JniMethodBuilder::builder()
+            ->returnTypedObject(JniMethodBuilder::kJavaClassNameSet)
             ->build();
-    jobject javaObject = this->jniObj->callMethod<jobject>("keySet", signature);
-    return JavaLangObject::fromLocalRef<JavaUtilSet>(javaObject);
+    QAndroidJniObject javaObject = this->getJniObject().callObjectMethod("keySet", signature);
+    return JavaLangObject(javaObject);
 }
 
-QSet<JavaUtilMapEntry> JavaUtilMap::entrySet(){
+QList<JavaUtilMapEntry> JavaUtilMap::entrySet(){
 
-    QSet<JavaUtilMapEntry> set;
+    QList<JavaUtilMapEntry> list;
 
-    char * signature =  JniMethodBuilder::builder()
-            ->returnType(JniMethodBuilder::JavaClassNameSet)
+    const char* signature =  JniMethodBuilder::builder()
+            ->returnTypedObject(JniMethodBuilder::kJavaClassNameSet)
             ->build();
-    jobject javaObject = this->jniObj->callMethod<jobject>("entrySet", signature);
-    JavaUtilSet javaSet = JavaLangObject::fromLocalRef<JavaUtilSet>(javaObject);
+    QAndroidJniObject javaObject = this->getJniObject().callObjectMethod("entrySet", signature);
+    JavaUtilSet javaSet = JavaLangObject(javaObject);
 
     QList<JavaLangObject> items = javaSet.toArray();
 
-    for(JavaLangObject it : items){
-        set << it.cast<JavaUtilMapEntry>();
+    for(JavaUtilMapEntry it : items){
+        list.append(it);
     }
 
-    return set;
+    return list;
 
 }
 
 QList<JavaLangObject> JavaUtilMap::values(){
 
-    char * signature =  JniMethodBuilder::builder()
-            ->returnType(JniMethodBuilder::JavaClassNameCollection)
+    const char* signature =  JniMethodBuilder::builder()
+            ->returnTypedObject(JniMethodBuilder::kJavaClassNameCollection)
             ->build();
-    jobject javaObject = this->jniObj->callMethod<jobject>("values", signature);
-    JavaUtilCollection javaCollection = JavaLangObject::fromLocalRef<JavaUtilCollection>(javaObject);
+    QAndroidJniObject javaObject = this->getJniObject().callObjectMethod("values", signature);
+    JavaUtilCollection javaCollection = JavaLangObject(javaObject);
 
     return javaCollection.toArray();
 }
 
-JavaLangObject JavaUtilMap::get(JavaLangObject key){
-    char * signature =  JniMethodBuilder::builder()
-            ->returnType(JniMethodBuilder::JavaClassNameObject)
-            ->argObject()
+JavaLangObject JavaUtilMap::get(JavaLangObject &key){
+    const char* signature =  JniMethodBuilder::builder()
+            ->returnTypedObject(JniMethodBuilder::kJavaClassNameObject)
+            ->arg<jobject>()
             ->build();
-    jobject javaObject = this->jniObj->callMethod<jobject>("get", signature, key.object());
-    return JavaLangObject::fromLocalRef<JavaLangObject>(javaObject);
+    QAndroidJniObject javaObject = this->getJniObject().callObjectMethod("get", signature, key.getJavaObject());
+    return JavaLangObject(javaObject);
 }
 
-JavaLangObject JavaUtilMap::remove(JavaLangObject key){
-    char * signature =  JniMethodBuilder::builder()
-            ->returnType(JniMethodBuilder::JavaClassNameObject)
-            ->argObject()
+JavaLangObject JavaUtilMap::remove(JavaLangObject &key){
+    const char* signature =  JniMethodBuilder::builder()
+            ->returnTypedObject(JniMethodBuilder::kJavaClassNameObject)
+            ->arg<jobject>()
             ->build();
-    jobject javaObject = this->jniObj->callMethod<jobject>("remove", signature, key.object());
-    return JavaLangObject::fromLocalRef<JavaLangObject>(javaObject);
+    QAndroidJniObject javaObject = this->getJniObject().callObjectMethod("remove", signature, key.getJavaObject());
+    return JavaLangObject(javaObject);
 }
 
-void JavaUtilMap::put(JavaLangObject key, JavaLangObject value){
-    char * signature =  JniMethodBuilder::builder()
-            ->argObject()
-            ->argObject()
+void JavaUtilMap::put(JavaLangObject &key, JavaLangObject &value){
+    const char* signature =  JniMethodBuilder::builder()
+            ->arg<jobject>()
+            ->arg<jobject>()
             ->build();
-    this->jniObj->callMethod<void>("put", signature, key.object(), value.object());
-}
-
-template <>
-JavaUtilMap JavaLangObject::fromLocalRef<JavaUtilMap>(jobject obj){
-    return JavaUtilMap(QAndroidJniObject::fromLocalRef(obj));
-}
-
-template <>
-JavaUtilMap JavaLangObject::fromClass<JavaUtilMap>(QString const &className, const char *sig, ...){
-    QAndroidJniEnvironment env;
-    jclass javaCllass = env.findClass(className.toLatin1().data());
-    va_list args;
-    va_start(args, sig);
-    QAndroidJniObject jniObject(javaCllass, sig, args);
-    va_end(args);
-    return JavaUtilMap(jniObject);
-}
-
-template <>
-JavaUtilMap JavaLangObject::fromClass<JavaUtilMap>(QString const &className){
-    QAndroidJniEnvironment env;
-    jclass javaCllass = env.findClass(className.toLatin1().data());
-    QAndroidJniObject jniObject(javaCllass);
-    return JavaUtilMap(jniObject);
+    this->getJniObject().callMethod<void>("put", signature, key.getJavaObject(), value.getJavaObject());
 }

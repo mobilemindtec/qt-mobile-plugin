@@ -13,7 +13,6 @@ uri = com.qt.plugin
 
 # Input
 SOURCES += \
-        firebase/firebasefirestoremodel.cpp \
         jni/javalangobject.cpp \
         jni/javautilcollection.cpp \
         jni/javalangthrowable.cpp \
@@ -25,10 +24,10 @@ SOURCES += \
         jni/jniutil/jnimethodbuilder.cpp \
         jni/qtchannelmessage.cpp \
         jni/qtchannel.cpp \
+        firebasefirestoremodel.cpp \
         qtmobile_plugin.cpp
 
 HEADERS += \
-        firebase/firebasefirestoremodel.h \
         jni/javalangobject.h \
         jni/javautilcollection.h \
         jni/javalangthrowable.h \
@@ -40,6 +39,7 @@ HEADERS += \
         jni/jniutil/jnimethodbuilder.h \
         jni/qtchannelmessage.h \
         jni/qtchannel.h \
+        firebasefirestoremodel.h \
         qtmobile_plugin.h
 
 PLUGINFILES += \
@@ -50,6 +50,7 @@ DISTFILES += $$PLUGINFILES \
     android/src/com/qt/plugin/core/QChannelImpl.java \
     android/src/com/qt/plugin/core/QtChannel.java \
     android/src/com/qt/plugin/core/QtChannelMessage.java
+
 
 #!equals(_PRO_FILE_PWD_, $$OUT_PWD) {
 #    copy_qmldir.target = $$OUT_PWD/qmldir

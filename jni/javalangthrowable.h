@@ -7,12 +7,13 @@
 
 class JavaLangThrowable{
 private:
-    QAndroidJniObject jniObj;
+    QAndroidJniObject _jniObj;
 public:    
     JavaLangThrowable(QAndroidJniObject obj);
+    JavaLangThrowable(const JavaLangThrowable &o) : _jniObj(o._jniObj) {}
     QString getMessage();
     QString getStackTrace();  
-    QAndroidJniObject object();
+    QAndroidJniObject getJniObject();
 
     static JavaLangThrowable fromLocalRef(jobject obj);
 };

@@ -1,70 +1,45 @@
 #include "javautilcollection.h"
 
-
-
 int JavaUtilCollection::size(){
-    return this->jniObj->callMethod<jboolean>("size");
+    return this->getJniObject().callMethod<jboolean>("size");
 }
 
-bool JavaUtilCollection::remove(JavaLangObject obj){
-    char * signature =  JniMethodBuilder::builder()->returnArrayBoolean()->argObject()->build();
-    return this->jniObj->callMethod<jboolean>("remove", signature, obj.object());
+bool JavaUtilCollection::remove(JavaLangObject &obj){
+    const char* signature =  JniMethodBuilder::builder()->returnType<bool>()->arg<jobject>()->build();
+    return this->getJniObject().callMethod<jboolean>("remove", signature, obj.getJavaObject());
 }
 
-bool JavaUtilCollection::contains(JavaLangObject obj){
-    char * signature =  JniMethodBuilder::builder()->returnArrayBoolean()->argObject()->build();
-    return this->jniObj->callMethod<jboolean>("contains", signature, obj.object());
+bool JavaUtilCollection::contains(JavaLangObject &obj){
+    const char* signature =  JniMethodBuilder::builder()->returnType<bool>()->arg<jobject>()->build();
+    return this->getJniObject().callMethod<jboolean>("contains", signature, obj.getJavaObject());
 }
 
 bool JavaUtilCollection::isEmpty(){
-    return this->jniObj->callMethod<jboolean>("isEmpty");
+    return this->getJniObject().callMethod<jboolean>("isEmpty");
 }
 
 void JavaUtilCollection::clear(){
-    this->jniObj->callMethod<void>("clear");
+    this->getJniObject().callMethod<void>("clear");
 }
 
-void JavaUtilCollection::add(JavaLangObject obj){
-    char * signature =  JniMethodBuilder::builder()->argObject()->build();
-    this->jniObj->callMethod<void>("add", signature, obj.object());
+void JavaUtilCollection::add(JavaLangObject &obj){
+    const char* signature =  JniMethodBuilder::builder()->arg<jobject>()->build();
+    this->getJniObject().callMethod<void>("add", signature, obj.getJavaObject());
 }
 
 JavaUtilIterator JavaUtilCollection::iterator(){
-    char * signature =  JniMethodBuilder::builder()->returnType(JniMethodBuilder::JavaClassNameIterator)->build();
-    jobject javaObject = this->jniObj->callMethod<jobject>("iterator", signature);
-    return JavaLangObject::fromLocalRef<JavaUtilIterator>(javaObject);
+    const char* signature =  JniMethodBuilder::builder()->returnTypedObject(JniMethodBuilder::kJavaClassNameIterator)->build();
+    qDebug() << "toString " << this->getJniObject().toString();
+    QAndroidJniObject javaObject = this->getJniObject().callObjectMethod("iterator", signature);
+
+    return JavaLangObject(javaObject);
 }
 
 QList<JavaLangObject> JavaUtilCollection::toArray(){
     JavaUtilIterator it = this->iterator();
     QList<JavaLangObject> results;
     while(it.hasNext()){
-        results << it.next();
+        results.append(it.next());
     }
     return results;
-}
-
-template <>
-JavaUtilCollection JavaLangObject::fromLocalRef<JavaUtilCollection>(jobject obj){
-    return JavaUtilCollection(QAndroidJniObject::fromLocalRef(obj));
-}
-
-
-template <>
-JavaUtilCollection JavaLangObject::fromClass<JavaUtilCollection>(QString const &className, const char *sig, ...){
-    QAndroidJniEnvironment env;
-    jclass javaCllass = env.findClass(className.toLatin1().data());
-    va_list args;
-    va_start(args, sig);
-    QAndroidJniObject jniObject(javaCllass, sig, args);
-    va_end(args);
-    return JavaUtilCollection(jniObject);
-}
-
-template <>
-JavaUtilCollection JavaLangObject::fromClass<JavaUtilCollection>(QString const &className){
-    QAndroidJniEnvironment env;
-    jclass javaCllass = env.findClass(className.toLatin1().data());
-    QAndroidJniObject jniObject(javaCllass);
-    return JavaUtilCollection(jniObject);
 }

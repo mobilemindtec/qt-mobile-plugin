@@ -10,31 +10,42 @@
 
 class QtChannelMessage : public JavaLangObject
 {
+    Q_OBJECT
+
+
 public:
-    QtChannelMessage() : JavaLangObject() {}
+    explicit QtChannelMessage() : JavaLangObject() {}
     QtChannelMessage(QAndroidJniObject obj) : JavaLangObject(obj){}
+    QtChannelMessage(QString const &errorMessage) : JavaLangObject(errorMessage){};
+    QtChannelMessage(jobject obj) : JavaLangObject(obj){};
+    QtChannelMessage(const QtChannelMessage & obj) : JavaLangObject(obj) {}
+    QtChannelMessage(const JavaLangObject & obj) : JavaLangObject(obj) {}
 
-    static const QString JavaClassName;
+    static const QString kJavaClassName;
 
-    static QtChannelMessage newJavaObject();
-    static QtChannelMessage newJavaObject(QString const &channelName, QString const &methodName);
+    static QtChannelMessage * newJavaObject();
+    static QtChannelMessage * newJavaObject(QString const &channelName, QString const &methodName);
 
-    QList<JavaLangObject> getData() const;
-    JavaLangObject getFirstData() const;
-    JavaLangObject getData(int const &index) const;
-    void setId(QString const &id) const;
-    QString getId() const;
-    void setMethodName(QString const &methodName) const;
-    QString getMethodName() const;
-    void setChannelName(QString const &channelName) const;
-    QString getChannelName() const;
-    bool hasError() const;
-    bool hasThrowable() const;
-    JavaLangThrowable getThrowable() const;
-    QString getErrorDescription() const;
-    void addArg(JavaLangObject &arg) const;
-    QtChannelMessage * withArg(JavaLangObject &arg);
-     QString dump() const;
+    QList<JavaLangObject> getData();
+    JavaLangObject getFirstData();
+    JavaLangObject getData(int const &index);
+    JavaLangObject getData(int const &index, const char* methodSignature);
+    void setId(QString const &id);
+    QString getId();
+    void setMethodName(QString const &methodName);
+    QString getMethodName();
+    void setChannelName(QString const &channelName);
+    QString getChannelName();
+    bool hasError();
+    bool hasThrowable();
+    JavaLangThrowable getThrowable();
+    QString getErrorDescription();
+    void addArg(JavaLangObject &arg);
+    QtChannelMessage* withArg(JavaLangObject &arg);
+    QtChannelMessage* withArg(QString const &arg);
+    QString dump();
 };
+
+ Q_DECLARE_METATYPE(QtChannelMessage)
 
 #endif // QTCHANNELMESSAGE_H

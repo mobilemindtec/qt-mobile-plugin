@@ -6,41 +6,44 @@
 #include <QString>
 #include "jniutil/jnimethodbuilder.h"
 
-class JavaLangObject
+class JavaLangObject : public QObject
 {
 
-protected:
+private:
     bool _error;
     QString _errorMessage;
-    QAndroidJniObject *jniObj;
+    QAndroidJniObject _jniObject;
 public:
-    JavaLangObject();
+    explicit JavaLangObject();
     JavaLangObject(QString const &errorMessage);
-    ~JavaLangObject();
-    explicit JavaLangObject(QAndroidJniObject jniObj);
-    QAndroidJniObject* object();
-    QString errorMessage() { return this->_errorMessage; };
-    bool error() { return this->_error; };
-    virtual void exceptionCheck();
+    JavaLangObject(QAndroidJniObject jniObj);
+    JavaLangObject(jobject obj);
+    JavaLangObject(const JavaLangObject &o)
+        : _error(o._error), _errorMessage(o._errorMessage), _jniObject(o._jniObject) {}
+    virtual ~JavaLangObject();
 
-    template <typename T>
-    static T fromLocalRef(jobject obj);
+    QAndroidJniObject getJniObject();
+    void setJniObject(QAndroidJniObject);
+    jobject getJavaObject();
+    QString getErrorMessage();
+    bool error();
 
-    template <typename T>
-    static T fromClass(QString const &clazzName, const char *sig, ...);
+    void exceptionCheck();
 
-    template <typename T>
-    static T fromClass(QString const &clazzName);
+    static JavaLangObject fromLocalRef(jobject obj);
+    static JavaLangObject fromClass(QString const &clazzName, const char *sig, ...);
+    static JavaLangObject fromClass(QString const &clazzName);
+    static QString toQString(jstring const &str);
+    static char* toChar(QString const &str);
 
-    template <typename T>
-    T cast();
 
+    JavaLangObject operator=(const JavaLangObject &obj){
+        return JavaLangObject(obj);
+    }
 
     QString toString();
-
-    static QString convertJavaString(jstring const &str);
+    int hashCode();
 };
-
 
 
 
