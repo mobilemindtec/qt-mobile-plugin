@@ -9,6 +9,6 @@ void JavaUtilIterator::remove(){
 }
 
 JavaLangObject JavaUtilIterator::next(){
-    QAndroidJniObject javaObject = this->getJniObject().callObjectMethod<jobject>("next");
+    QJniObject javaObject = this->getJniObject().callObjectMethod<jobject>("next");
     return JavaLangObject(javaObject);
 }

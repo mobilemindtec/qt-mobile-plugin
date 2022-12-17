@@ -1,13 +1,6 @@
 #include "jnimethodbuilder.h"
 
-const QString JniMethodBuilder::kJavaClassNameObject = "java/lang/Object";
-const QString JniMethodBuilder::kJavaClassNameString = "java/lang/String";
-const QString JniMethodBuilder::kJavaClassNameList= "java/util/List";
-const QString JniMethodBuilder::kJavaClassNameMap= "java/util/Map";
-const QString JniMethodBuilder::kJavaClassNameSet = "java/util/Set";
-const QString JniMethodBuilder::kJavaClassNameArrayList = "java/util/ArrayList";
-const QString JniMethodBuilder::kJavaClassNameIterator = "java/util/Iterator";
-const QString JniMethodBuilder::kJavaClassNameCollection= "java/util/Collection";
+
 
 JniMethodBuilder* JniMethodBuilder::builder(){
      return new JniMethodBuilder();
@@ -170,11 +163,11 @@ JniMethodBuilder* JniMethodBuilder::argTypedObject(QString const &fullyQualified
 
     QString classFullName = fullyQualifiedName;
     if(!fullyQualifiedName.startsWith("L")){
-        classFullName = QString("%1%2").arg("L").arg(classFullName);
+        classFullName = QString("%1%2").arg("L", classFullName);
     }
 
     if(!fullyQualifiedName.endsWith(";")){
-        classFullName = QString("%1%2").arg(classFullName).arg(";");
+        classFullName = QString("%1%2").arg(classFullName, ";");
     }
 
     return this->arg(classFullName);
@@ -185,13 +178,13 @@ JniMethodBuilder* JniMethodBuilder::argTypedArray(QString const &fullyQualifiedN
     QString classFullName = fullyQualifiedName;
 
     if(fullyQualifiedName.startsWith("L")){
-        classFullName = QString("%1%2").arg("[").arg(classFullName);
+        classFullName = QString("%1%2").arg("[", classFullName);
     } else if(!fullyQualifiedName.startsWith("[L")){
-        classFullName = QString("%1%2").arg("[L").arg(classFullName);
+        classFullName = QString("%1%2").arg("[L", classFullName);
     }
 
     if(!fullyQualifiedName.endsWith(";")){
-        classFullName = QString("%1%2").arg(classFullName).arg(";");
+        classFullName = QString("%1%2").arg(classFullName, ";");
     }
 
     return this->arg(classFullName);
@@ -205,11 +198,11 @@ JniMethodBuilder* JniMethodBuilder::returnTyped(QString const &fullyQualifiedNam
 JniMethodBuilder* JniMethodBuilder::returnTypedObject(QString const &fullyQualifiedName) {
     QString classFullName = fullyQualifiedName;
     if(!fullyQualifiedName.startsWith("L")){
-        classFullName = QString("%1%2").arg("L").arg(classFullName);
+        classFullName = QString("%1%2").arg("L", classFullName);
     }
 
     if(!fullyQualifiedName.endsWith(";")){
-        classFullName = QString("%1%2").arg(classFullName).arg(";");
+        classFullName = QString("%1%2").arg(classFullName, ";");
     }
 
     return this->returnTyped(classFullName);
@@ -220,48 +213,48 @@ JniMethodBuilder* JniMethodBuilder::returnTypedArray(QString const &fullyQualifi
     QString classFullName = fullyQualifiedName;
 
     if(fullyQualifiedName.startsWith("L")){
-        classFullName = QString("%1%2").arg("[").arg(classFullName);
+        classFullName = QString("%1%2").arg("[", classFullName);
     } else if(!fullyQualifiedName.startsWith("[L")){
-        classFullName = QString("%1%2").arg("[L").arg(classFullName);
+        classFullName = QString("%1%2").arg("[L", classFullName);
     }
 
     if(!fullyQualifiedName.endsWith(";")){
-        classFullName = QString("%1%2").arg(classFullName).arg(";");
+        classFullName = QString("%1%2").arg(classFullName, ";");
     }
 
     return this->returnTyped(classFullName);
 }
 
-int JniMethodBuilder::callMethodJavaUtilCollection_Size(QAndroidJniObject const &obj){
+int JniMethodBuilder::callMethodJavaUtilCollection_Size(QJniObject const &obj){
     return obj.callMethod<jint>("size");
 }
 
-QAndroidJniObject JniMethodBuilder::callMethodJavaUtilMap_EntrySet(QAndroidJniObject const &obj){
+QJniObject JniMethodBuilder::callMethodJavaUtilMap_EntrySet(QJniObject const &obj){
     JniMethodBuilder* builer = new JniMethodBuilder();
-    const char* signature =  builer->returnType<JavaSet>()->build();
-    QAndroidJniObject javaObj = obj.callObjectMethod("entrySet", signature);
+    auto signature =  builer->returnType<JavaSet>()->build();
+    QJniObject javaObj = obj.callObjectMethod("entrySet", signature.toLocal8Bit().constData());
     return javaObj;
 }
 
-QAndroidJniObject JniMethodBuilder::callMethodJavaUtilSet_ToArray(QAndroidJniObject const &obj){
+QJniObject JniMethodBuilder::callMethodJavaUtilSet_ToArray(QJniObject const &obj){
     JniMethodBuilder* builer = new JniMethodBuilder();
-    const char* signature =  builer->returnType<jarray>()->build();
-    QAndroidJniObject javaObj = obj.callObjectMethod("toArray", signature);
+    auto signature =  builer->returnType<jarray>()->build();
+    QJniObject javaObj = obj.callObjectMethod("toArray", signature.toLocal8Bit().constData());
     return javaObj;
 }
 
-QAndroidJniObject JniMethodBuilder::callMethodJavaUtilList_Get(QAndroidJniObject const &obj){
-    QAndroidJniObject javaObj = obj.callObjectMethod<jobject>("get");
+QJniObject JniMethodBuilder::callMethodJavaUtilList_Get(QJniObject const &obj){
+    QJniObject javaObj = obj.callObjectMethod<jobject>("get");
     return javaObj;
 }
 
-QAndroidJniObject JniMethodBuilder::callMethodJavaUtil_MapEntry_GetKey(QAndroidJniObject const &obj){
-    QAndroidJniObject javaObj = obj.callObjectMethod<jobject>("getKey");
+QJniObject JniMethodBuilder::callMethodJavaUtil_MapEntry_GetKey(QJniObject const &obj){
+    QJniObject javaObj = obj.callObjectMethod<jobject>("getKey");
     return javaObj;
 }
 
-QAndroidJniObject JniMethodBuilder::callMethodJavaUtil_MapEntry_GetValue(QAndroidJniObject const &obj){
-    QAndroidJniObject javaObj = obj.callObjectMethod<jobject>("getValue");
+QJniObject JniMethodBuilder::callMethodJavaUtil_MapEntry_GetValue(QJniObject const &obj){
+    QJniObject javaObj = obj.callObjectMethod<jobject>("getValue");
     return javaObj;
 }
 
@@ -275,45 +268,37 @@ JniMethodBuilder* JniMethodBuilder::empty(){
     return this;
 }
 
-const char* JniMethodBuilder::build(){
+const QString JniMethodBuilder::build(){
 
-    const char* methodAsign;
+    QString value;
 
     if(this->_qualifiedReturn.isEmpty() || this->_qualifiedReturn.isEmpty()){
         this->returnType<void>();
     }
 
     if(this->_qualifiedArgs.isEmpty()){
-       QString value = QString("()%1").arg(this->_qualifiedReturn);
-       methodAsign = value.toLocal8Bit().constData();
+       value = QString("()%1").arg(this->_qualifiedReturn);
     } else {
-
         QString args;
 
-        for(QString it : this->_qualifiedArgs){
+        for(const QString& it : this->_qualifiedArgs){
             args.append(it);
         }
-
         qDebug() << "ARGS " << args << ", RETURN " << this->_qualifiedReturn;
-
-        QString value = QString("(%1)%2").arg(args).arg(this->_qualifiedReturn);
-        qDebug() << "VALUE " << value;
-        methodAsign = value.toLocal8Bit().constData();
+        value = QString("(%1)%2").arg(args, this->_qualifiedReturn);
     }
 
-    qDebug() << "methodAsign " << methodAsign;
 
-    return methodAsign;
+    qDebug() << "VALUE " << value;
+
+    return value;
+
 }
 
-const char* JniMethodBuilder::buildConstructor(){
-
+const QString JniMethodBuilder::buildConstructor(){
     QString args;
-
-    for(QString it : this->_qualifiedArgs){
+    for(const QString& it : this->_qualifiedArgs){
         args.append(it);
     }
-
-    QString value = QString("%2").arg(args);
-    return value.toLocal8Bit().constData();
+    return QString("%2").arg(args);
 }

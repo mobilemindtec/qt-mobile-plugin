@@ -1,0 +1,24 @@
+#ifndef QTMOBILEPLUGINMIME_H
+#define QTMOBILEPLUGINMIME_H
+
+#include "util/final_act.h"
+#include "jni/jniutil/jnimethodbuilder.h"
+#include "jni/jniutil/javaclassnames.h"
+#include "jni/javalangobject.h"
+#include "jni/javalangthrowable.h"
+#include "jni/javautilcollection.h"
+#include "jni/javautiliterator.h"
+#include "jni/javautillist.h"
+#include "jni/javautilmap.h"
+#include "jni/javautilmapentry.h"
+#include "jni/javautilset.h"
+#include "jni/qtmobileplugindispatcher.h"
+#include "jni/qtmobilepluginchannelmessage.h"
+#include "javaiqtvariant.h"
+#include "javaqtvariant.h"
+#include "javaqtvariantlist.h"
+#include "javaqtvariantmap.h"
+#include "javaqtvariantconverter.h"
+
+
+#endif // QTMOBILEPLUGINMIME_H

@@ -14,11 +14,11 @@ JavaLangObject::JavaLangObject(QString const &errorMessage) : QObject(nullptr){
     this->_errorMessage = errorMessage;
 }
 
-JavaLangObject::JavaLangObject(jobject obj) : JavaLangObject(QAndroidJniObject::fromLocalRef(obj)){
+JavaLangObject::JavaLangObject(jobject obj) : JavaLangObject(QJniObject::fromLocalRef(obj)){
 
 }
 
-JavaLangObject::JavaLangObject(QAndroidJniObject jniObj) : QObject(nullptr)
+JavaLangObject::JavaLangObject(QJniObject jniObj) : QObject(nullptr)
 {
     if(jniObj != NULL){
         this->_jniObject = jniObj;
@@ -37,11 +37,11 @@ JavaLangObject::~JavaLangObject(){
     //delete this->_jniObject;
 }
 
-QAndroidJniObject JavaLangObject::getJniObject(){
+QJniObject JavaLangObject::getJniObject(){
     return this->_jniObject;
 }
 
-void JavaLangObject::setJniObject(QAndroidJniObject o){
+void JavaLangObject::setJniObject(QJniObject o){
     this->_jniObject = o;
 }
 
@@ -49,11 +49,11 @@ jobject JavaLangObject::getJavaObject(){
     return this->_jniObject.object();
 }
 
-bool JavaLangObject::error(){
+bool JavaLangObject::error() const{
     return this->_error;
 }
 
-QString JavaLangObject::getErrorMessage(){
+QString JavaLangObject::getErrorMessage() const{
     return this->_errorMessage;
 }
 
@@ -61,34 +61,38 @@ QString JavaLangObject::toString(){
     return this->_jniObject.toString();
 }
 
+JavaLangObject JavaLangObject::fromString(QString const &str){
+    return JavaLangObject(QJniObject::fromString(str));
+}
+
 JavaLangObject JavaLangObject::fromLocalRef(jobject obj){
-    return JavaLangObject(QAndroidJniObject::fromLocalRef(obj));
+    return JavaLangObject(QJniObject::fromLocalRef(obj));
 }
 
 JavaLangObject JavaLangObject::fromClass(QString const &className, const char *sig, ...){
-    QAndroidJniEnvironment env;
+    QJniEnvironment env;
     jclass javaCllass = env.findClass(className.toLocal8Bit().constData());
     va_list args;
     va_start(args, sig);
-    QAndroidJniObject jniObject(javaCllass, sig, args);
+    QJniObject jniObject(javaCllass, sig, args);
     va_end(args);
     return JavaLangObject(jniObject);
 }
 
 JavaLangObject JavaLangObject::fromClass(QString const &className){
-    QAndroidJniEnvironment env;
+    QJniEnvironment env;
     jclass javaCllass = env.findClass(className.toLocal8Bit().constData());
-    QAndroidJniObject jniObject(javaCllass);
+    QJniObject jniObject(javaCllass);
     return JavaLangObject(jniObject);
 }
 
 
 void JavaLangObject::exceptionCheck(){
-    QAndroidJniEnvironment env;
+    QJniEnvironment env;
 
     if(env->ExceptionCheck()){
         env->ExceptionDescribe();
-        JavaLangThrowable throwable = JavaLangThrowable(QAndroidJniObject::fromLocalRef(env->ExceptionOccurred()));
+        JavaLangThrowable throwable = JavaLangThrowable(QJniObject::fromLocalRef(env->ExceptionOccurred()));
         this->_error = true;
         this->_errorMessage = throwable.getStackTrace();
 
@@ -101,10 +105,15 @@ void JavaLangObject::exceptionCheck(){
 }
 
 QString JavaLangObject::toQString(jstring const &str){
-    return QAndroidJniObject::fromLocalRef(str).toString();
+    return QJniObject::fromLocalRef(str).toString();
 }
 
-char* JavaLangObject::toChar(QString const &str) {
-    return str.toLocal8Bit().data();
+QString JavaLangObject::getJavaClassName(){
+    return this->_jniObject.className();
 }
+
+bool JavaLangObject::isValidJavaInstace(){
+    return this->_jniObject.isValid();
+}
+
 

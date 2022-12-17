@@ -1,19 +1,20 @@
 package com.qt.plugin.core;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-public class QtMobilePluginChannelMessage {
+public class QtMobilePluginChannelMessage implements Serializable {
     private String id;
     private String channelName;
     private String methodName;
-    private Throwable errorObject;
     private boolean error;
     private String errorDescription;
+    private Throwable errorObject;
 
     // c++ to java
-    private List<Object> args = new LinkedList<>();
+    private QtVariantList values = new QtVariantList();
 
     public QtMobilePluginChannelMessage(){
         this.newId();
@@ -29,12 +30,16 @@ public class QtMobilePluginChannelMessage {
     }
 
 
-    static QtMobilePluginChannelMessage fromArgs(Object ...args){
+    static QtMobilePluginChannelMessage fromArgs(IQtVariant ...args){
         QtMobilePluginChannelMessage message = new QtMobilePluginChannelMessage();
-        for(Object obj : args)
-            message.args.add(obj);
+        for(IQtVariant obj : args)
+            message.addVariant(obj);
 
         return message;
+    }
+
+    public void addVariant(Object value){
+        this.values.add(new QtVariant(value));
     }
 
     public QtMobilePluginChannelMessage withChannelName(String name){
@@ -64,16 +69,16 @@ public class QtMobilePluginChannelMessage {
         return this;
     }
 
-    public void addArg(Object arg){
-        this.args.add(arg);
+    public void addArg(QtVariant arg){
+        this.values.add(arg);
     }
 
-    public List<Object> getArgs(){
-        return this.args;
+    public List<IQtVariant> getArgs(){
+        return this.values;
     }
 
-    public List<Object> getData(){
-        return this.args;
+    public List<IQtVariant> getData(){
+        return this.values;
     }
 
     public Object getFirstData(){
@@ -93,16 +98,31 @@ public class QtMobilePluginChannelMessage {
     }
 
     public <T> T getArg(int index){
-        if(index >= 0 && index < this.args.size())
-            return (T) this.args.get(index);
+        if(index >= 0 && index < this.values.size()) {
+
+            IQtVariant variant = this.values.get(index);
+
+            if(variant.isVariant()){
+                return  ((QtVariant)variant).<T>getValue();
+            }
+
+            return (T) this.values.get(index);
+        }
 
         return null;
     }
 
     public <T> T getArg(int index, T defaultValue){
-        if(index >= 0 && index < this.args.size())
-            return (T) this.args.get(index);
+        if(index >= 0 && index < this.values.size()) {
+            IQtVariant variant = this.values.get(index);
 
+            if(variant.isVariant()){
+                T val =  ((QtVariant)variant).<T>getValue();
+                return val != null ? val : defaultValue;
+            }
+
+            return (T) this.values.get(index);
+        }
         return defaultValue;
     }
 
@@ -157,7 +177,7 @@ public class QtMobilePluginChannelMessage {
 
     public String dump() {
         String value = this.toString() + ", ARGS = {";
-        for(Object it : args)
+        for(Object it : values)
             value += it + ", ";
 
         value += "}, ID = " + id + ", Error = " + error;

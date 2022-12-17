@@ -1,26 +1,26 @@
 #include "javautilmapentry.h"
 
 JavaLangObject JavaUtilMapEntry::getKey(){
-    const char* signature =  JniMethodBuilder::builder()
-            ->returnTypedObject(JniMethodBuilder::kJavaClassNameObject)
+    auto signature =  JniMethodBuilder::builder()
+            ->returnTypedObject(kJavaLangObject)
             ->build();
-    QAndroidJniObject javaObject = this->getJniObject().callObjectMethod("getKey", signature);
+    QJniObject javaObject = this->getJniObject().callObjectMethod("getKey", signature.toLocal8Bit().constData());
     return JavaLangObject(javaObject);
 }
 
 JavaLangObject JavaUtilMapEntry::getValue(){
-    const char* signature =  JniMethodBuilder::builder()
-            ->returnTypedObject(JniMethodBuilder::kJavaClassNameObject)
+    auto signature =  JniMethodBuilder::builder()
+            ->returnTypedObject(kJavaLangObject)
             ->build();
-    QAndroidJniObject javaObject = this->getJniObject().callObjectMethod("getValue", signature);
+    QJniObject javaObject = this->getJniObject().callObjectMethod("getValue", signature.toLocal8Bit().constData());
     return JavaLangObject(javaObject);
 }
 
 JavaLangObject JavaUtilMapEntry::setValue(JavaLangObject &obj){
-    const char* signature =  JniMethodBuilder::builder()
-            ->returnTypedObject(JniMethodBuilder::kJavaClassNameObject)
+    auto signature =  JniMethodBuilder::builder()
+            ->returnTypedObject(kJavaLangObject)
             ->arg<jobject>()
             ->build();
-    QAndroidJniObject javaObject = this->getJniObject().callObjectMethod("setValue", signature, obj.getJavaObject());
+    QJniObject javaObject = this->getJniObject().callObjectMethod("setValue", signature.toLocal8Bit().constData(), obj.getJavaObject());
     return JavaLangObject(javaObject);
 }

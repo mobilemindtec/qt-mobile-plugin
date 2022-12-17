@@ -1,21 +1,21 @@
 #ifndef JAVALANGTHROWABLE_H
 #define JAVALANGTHROWABLE_H
 
+#include <QJniObject>
 #include "javalangobject.h"
-
-
 
 class JavaLangThrowable{
 private:
-    QAndroidJniObject _jniObj;
+    QJniObject _jniObj;
 public:    
-    JavaLangThrowable(QAndroidJniObject obj);
+    JavaLangThrowable(QJniObject obj);
     JavaLangThrowable(const JavaLangThrowable &o) : _jniObj(o._jniObj) {}
-    QString getMessage();
-    QString getStackTrace();  
-    QAndroidJniObject getJniObject();
+    QString getMessage() const;
+    QString getStackTrace() const;
+    QJniObject getJniObject();
 
     static JavaLangThrowable fromLocalRef(jobject obj);
+
 };
 
 

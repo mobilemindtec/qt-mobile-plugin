@@ -1,1 +1,7 @@
 .idea
+.qmake.stash
+.qtc_clangd/
+QtMobilePlugin.pro.user.*
+build/
+builds/
+

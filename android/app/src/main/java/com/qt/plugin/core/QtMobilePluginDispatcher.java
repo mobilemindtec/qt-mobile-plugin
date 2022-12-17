@@ -1,5 +1,7 @@
 package com.qt.plugin.core;
 
+import android.app.Activity;
+import android.content.Context;
 import android.util.Log;
 
 import java.util.HashMap;
@@ -11,7 +13,12 @@ public class QtMobilePluginDispatcher {
     private static Map<String, QtMobilePluginChannel> CHANNELS = new HashMap<>();
     private QtMobilePluginChannelMessage currentMessage;
 
-    public static native void onResult(QtMobilePluginChannelMessage message);
+    // C++ implements this
+    public static native void onQtResult(QtMobilePluginChannelMessage message);
+
+    public static void onResult(QtMobilePluginChannelMessage message){
+        onQtResult(message);
+    };
 
     public static void channelRegister(String channelName, QtMobilePluginChannel channel){
         Log.i(TAG, "channel register " + channelName);
@@ -20,7 +27,7 @@ public class QtMobilePluginDispatcher {
         }
     }
 
-    public void dispatch(QtMobilePluginChannelMessage message){
+    public void dispatch(Context context, Activity activity, QtMobilePluginChannelMessage message){
 
         this.currentMessage = currentMessage;
         Log.i(TAG, "dispatch channel " + message.getChannelName());
@@ -34,6 +41,8 @@ public class QtMobilePluginDispatcher {
 
         if(channel != null){
             try {
+                channel.setActivity(activity);
+                channel.setContext(context);
                 channel.callMethod(message);
             }catch (QtMobilePluginChannelException ex){
                 dispatchError(null, ex.getMessage(), message);

@@ -2,10 +2,10 @@
 
 JavaLangObject JavaUtilList::get(int const &index)
 {
-    const char* signature =  JniMethodBuilder::builder()
-            ->returnTypedObject(JniMethodBuilder::kJavaClassNameObject)
+    auto signature =  JniMethodBuilder::builder()
+            ->returnTypedObject(kJavaLangObject)
             ->arg<int>()
             ->build();
-    QAndroidJniObject javaObject = this->getJniObject().callObjectMethod("get", signature, jint(index));
+    QJniObject javaObject = this->getJniObject().callObjectMethod("get", signature.toLocal8Bit().constData(), jint(index));
     return JavaLangObject(javaObject);
 }

@@ -3,14 +3,15 @@
 
 #include "javalangobject.h"
 #include "javautilcollection.h"
-
+#include "jniutil/javaclassnames.h"
 
 class JavaUtilSet : public JavaUtilCollection{
 public:
     JavaUtilSet() : JavaUtilCollection() {}
-    JavaUtilSet(QAndroidJniObject obj) : JavaUtilCollection(obj){}
+    JavaUtilSet(QJniObject obj) : JavaUtilCollection(obj){}
     JavaUtilSet(const JavaUtilSet &obj) : JavaUtilCollection(obj){}
     JavaUtilSet(const JavaLangObject &obj) : JavaUtilCollection(obj){}
+
 };
 
 

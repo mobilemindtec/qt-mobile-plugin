@@ -1,8 +1,9 @@
 #ifndef JNIMETHODBUILDER_H
 #define JNIMETHODBUILDER_H
 
-#include <QAndroidJniObject>
 #include <QtCore>
+#include <QJniObject>
+
 
 class JavaArrayList{};
 class JavaSet{};
@@ -36,27 +37,19 @@ public:
 
     JniMethodBuilder* empty();
 
-    const char* build();
-    const char* buildConstructor();
+    const QString build();
+    const QString buildConstructor();
     void clear();
 
-    int callMethodJavaUtilCollection_Size(QAndroidJniObject const &obj);
-    QAndroidJniObject callMethodJavaUtilMap_EntrySet(QAndroidJniObject const &obj);
-    QAndroidJniObject callMethodJavaUtilSet_ToArray(QAndroidJniObject const &obj);
-    QAndroidJniObject callMethodJavaUtilList_Get(QAndroidJniObject const &obj);
-    QAndroidJniObject callMethodJavaUtil_MapEntry_GetKey(QAndroidJniObject const &obj);
-    QAndroidJniObject callMethodJavaUtil_MapEntry_GetValue(QAndroidJniObject const &obj);
+    int callMethodJavaUtilCollection_Size(QJniObject const &obj);
+    QJniObject callMethodJavaUtilMap_EntrySet(QJniObject const &obj);
+    QJniObject callMethodJavaUtilSet_ToArray(QJniObject const &obj);
+    QJniObject callMethodJavaUtilList_Get(QJniObject const &obj);
+    QJniObject callMethodJavaUtil_MapEntry_GetKey(QJniObject const &obj);
+    QJniObject callMethodJavaUtil_MapEntry_GetValue(QJniObject const &obj);
 
     static JniMethodBuilder* builder();
 
-    static const QString kJavaClassNameObject;
-    static const QString kJavaClassNameString;
-    static const QString kJavaClassNameList;
-    static const QString kJavaClassNameMap;
-    static const QString kJavaClassNameSet;
-    static const QString kJavaClassNameArrayList;
-    static const QString kJavaClassNameIterator;
-    static const QString kJavaClassNameCollection;
 };
 
 

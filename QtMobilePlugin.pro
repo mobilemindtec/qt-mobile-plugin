@@ -1,18 +1,17 @@
 TEMPLATE = lib
 TARGET = QtMobilePlugin
-QT += qml quick androidextras
-CONFIG += plugin c++11 qmltypes
-
-QML_IMPORT_NAME = QtMobilePlugin
-QML_IMPORT_MAJOR_VERSION = 1.0
-
-DESTDIR = imports/$$QML_IMPORT_NAME
-
+QT += core
+CONFIG += c++17
+DEFINES += QTMOBILEPLUGIN_LIBRARY
 TARGET = $$qtLibraryTarget($$TARGET)
-uri = com.qt.plugin
 
 # Input
 SOURCES += \
+        javaiqtvariant.cpp \
+        javaqtvariant.cpp \
+        javaqtvariantconverter.cpp \
+        javaqtvariantlist.cpp \
+        javaqtvariantmap.cpp \
         jni/javalangobject.cpp \
         jni/javautilcollection.cpp \
         jni/javalangthrowable.cpp \
@@ -22,12 +21,18 @@ SOURCES += \
         jni/javautilset.cpp \
         jni/javautilmap.cpp \
         jni/jniutil/jnimethodbuilder.cpp \
-        jni/qtchannelmessage.cpp \
-        jni/qtchannel.cpp \
-        firebasefirestoremodel.cpp \
-        qtmobile_plugin.cpp
+        jni/qtmobilepluginchannelmessage.cpp \
+        jni/qtmobileplugindispatcher.cpp
 
 HEADERS += \
+        javaiqtvariant.h \
+        QtMobilePluginMime \
+        javaqtvariantlist.h \
+        javaqtvariant.h \
+        javaqtvariantconverter.h \
+        javaqtvariantmap.h \
+        jni/jniutil/javaclassnames.h \
+        util/final_act.h \
         jni/javalangobject.h \
         jni/javautilcollection.h \
         jni/javalangthrowable.h \
@@ -37,61 +42,34 @@ HEADERS += \
         jni/javautilset.h \
         jni/javautilmap.h \
         jni/jniutil/jnimethodbuilder.h \
-        jni/qtchannelmessage.h \
-        jni/qtchannel.h \
-        firebasefirestoremodel.h \
-        qtmobile_plugin.h
-
-PLUGINFILES += \
-    imports/$$QML_IMPORT_NAME/plugin.qml \
-    imports/$$QML_IMPORT_NAME/qmldir
-
-DISTFILES += $$PLUGINFILES \
-    android/src/com/qt/plugin/core/QChannelImpl.java \
-    android/src/com/qt/plugin/core/QtChannel.java \
-    android/src/com/qt/plugin/core/QtChannelMessage.java
+        jni/qtmobilepluginchannelmessage.h \
+        jni/qtmobileplugindispatcher.h
 
 
-#!equals(_PRO_FILE_PWD_, $$OUT_PWD) {
-#    copy_qmldir.target = $$OUT_PWD/qmldir
-#    copy_qmldir.depends = $$_PRO_FILE_PWD_/qmldir
-#    copy_qmldir.commands = $(COPY_FILE) "$$replace(copy_qmldir.depends, /, $$QMAKE_DIR_SEP)" "$$replace(copy_qmldir.target, /, $$QMAKE_DIR_SEP)"
-#    QMAKE_EXTRA_TARGETS += copy_qmldir
-#    PRE_TARGETDEPS += $$copy_qmldir.target
-#}
-#
-#qmldir.files = qmldir
+headers_jni.path += $$[QT_INSTALL_HEADERS]/QtMobilePlugin/jni
+headers_jni.files += $$PWD/jni/*.h
+
+
+headers_util.path += $$[QT_INSTALL_HEADERS]/QtMobilePlugin/util
+headers_util.files += $$PWD/util/*.h
+
+headers_jniutil.path += $$[QT_INSTALL_HEADERS]/QtMobilePlugin/jni/jniutil
+headers_jniutil.files += $$PWD/jni/jniutil/*.h
+
+headers.path += $$[QT_INSTALL_HEADERS]/QtMobilePlugin
+headers.files += $$PWD/*.h $$PWD/QtMobilePluginMime
+
+
+
+
+#headers.files = $$HEADERS
+#headers.path = /usr/include/QtMobilePlugin
+
 #unix {
-#    installPath = $$[QT_INSTALL_QML]/$$replace(uri, \., /)
-#    qmldir.path = $$installPath
-#    target.path = $$installPath
-#    INSTALLS += target qmldir
+#    target.path = /usr/lib/QtMobilePlugin
 #}
 
-android {
-    ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
-
-    DISTFILES += \
-        android/build.gradle \
-    android/src/com/qt/plugin/firebase/QtFirebaseFirestore.java
-        #android/gradle/wrapper/gradle-wrapper.properties \
-        #android/AndroidManifest.xml \
-        #android/res/values/libs.xml \
-}
-
-target.path = $$[QT_INSTALL_QML]/$$QML_IMPORT_NAME
-
-pluginfiles_copy.files = $$PLUGINFILES
-pluginfiles_copy.path = $$DESTDIR
-
-pluginfiles_install.files = $$PLUGINFILES $$OUT_PWD/$$DESTDIR/plugins.qmltypes
-pluginfiles_install.path = $$[QT_INSTALL_QML]/$$QML_IMPORT_NAME
+INSTALLS += target headers headers_jni headers_util headers_jniutil
 
 
-INSTALLS += target pluginfiles_install
-COPIES += pluginfiles_copy
-
-OTHER_FILES += $$PLUGINFILES
-
-
-CONFIG += install_ok  # Do not cargo-cult this!
+#CONFIG += install_ok  # Do not cargo-cult this!

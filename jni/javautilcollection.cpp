@@ -1,17 +1,18 @@
 #include "javautilcollection.h"
 
+
 int JavaUtilCollection::size(){
     return this->getJniObject().callMethod<jboolean>("size");
 }
 
 bool JavaUtilCollection::remove(JavaLangObject &obj){
-    const char* signature =  JniMethodBuilder::builder()->returnType<bool>()->arg<jobject>()->build();
-    return this->getJniObject().callMethod<jboolean>("remove", signature, obj.getJavaObject());
+    auto signature =  JniMethodBuilder::builder()->returnType<bool>()->arg<jobject>()->build();
+    return this->getJniObject().callMethod<jboolean>("remove", signature.toLocal8Bit().constData(), obj.getJavaObject());
 }
 
 bool JavaUtilCollection::contains(JavaLangObject &obj){
-    const char* signature =  JniMethodBuilder::builder()->returnType<bool>()->arg<jobject>()->build();
-    return this->getJniObject().callMethod<jboolean>("contains", signature, obj.getJavaObject());
+    auto signature =  JniMethodBuilder::builder()->returnType<bool>()->arg<jobject>()->build();
+    return this->getJniObject().callMethod<jboolean>("contains", signature.toLocal8Bit().constData(), obj.getJavaObject());
 }
 
 bool JavaUtilCollection::isEmpty(){
@@ -23,14 +24,14 @@ void JavaUtilCollection::clear(){
 }
 
 void JavaUtilCollection::add(JavaLangObject &obj){
-    const char* signature =  JniMethodBuilder::builder()->arg<jobject>()->build();
-    this->getJniObject().callMethod<void>("add", signature, obj.getJavaObject());
+    auto signature =  JniMethodBuilder::builder()->arg<jobject>()->build();
+    this->getJniObject().callMethod<void>("add", signature.toLocal8Bit().constData(), obj.getJavaObject());
 }
 
 JavaUtilIterator JavaUtilCollection::iterator(){
-    const char* signature =  JniMethodBuilder::builder()->returnTypedObject(JniMethodBuilder::kJavaClassNameIterator)->build();
+    auto signature =  JniMethodBuilder::builder()->returnTypedObject(kJavaUtilIterator)->build();
     qDebug() << "toString " << this->getJniObject().toString();
-    QAndroidJniObject javaObject = this->getJniObject().callObjectMethod("iterator", signature);
+    QJniObject javaObject = this->getJniObject().callObjectMethod("iterator", signature.toLocal8Bit().constData());
 
     return JavaLangObject(javaObject);
 }
